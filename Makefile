@@ -2,7 +2,7 @@
 
 all: build
 
-build: config_parser/build/rtosconfig
+build: rtosconfig/build/rtosconfig
 
 install: build
 	chmod +x ./install.sh && ./install.sh
@@ -12,8 +12,8 @@ uninstall:
 
 # cleans build directories
 clean:
-	rm -rf config_parser/build
+	rm -rf rtosconfig/build
 
-config_parser/build/rtosconfig: config_parser/main.cpp
-	mkdir -p config_parser/build
+rtosconfig/build/rtosconfig: rtosconfig/main.cpp
+	mkdir -p rtosconfig/build
 	$(CXX) $(CXXFLAGS) $^ -o $@
