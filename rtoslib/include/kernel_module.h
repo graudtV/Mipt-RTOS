@@ -15,8 +15,9 @@ public:
 	void relinquish();
 	void suspend() { suspend_task(m_current_task); }
 
-	void suspend_task(task_id_t task_id) { m_suspended_tasks[task_id] = true; }
-	void resume_task(task_id_t task_id) { m_suspended_tasks[task_id] = false; }
+	void suspend_task(task_id_t task_id) { m_task_is_suspended[task_id] = true; }
+	void resume_task(task_id_t task_id) { m_task_is_suspended[task_id] = false; }
+	void abort_task(task_id_t task_id) { m_task_is_suspended[task_id] = m_task_start_from_begining[task_id] = true; }
 	// void restart_task(task_id_t task_id) {}
 	// void reset_task(task_id_t task_id);
 	/* ... */
@@ -34,7 +35,7 @@ private:
 	static addr_t m_task_stack_pointers[];
 	static addr_t m_task_stack_starting[];
 	static bool m_task_start_from_begining[];
-	static bool m_suspended_tasks[];
+	static bool m_task_is_suspended[];
 
 	static task_id_t m_current_task;
 };

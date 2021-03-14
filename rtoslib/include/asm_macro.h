@@ -12,7 +12,13 @@
 			"push %rdx\n\t"			\
 		);
 
-	#define asm_popall()
+	#define asm_popall()			\
+		asm volatile (				\
+			"pop %rdx\n\t"			\
+			"pop %rcx\n\t"			\
+			"pop %rbx\n\t"			\
+			"pop %rax\n\t"			\
+		);
 
 	#define asm_get_stack_pointer()					\
 		({											\

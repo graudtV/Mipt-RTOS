@@ -11,6 +11,7 @@ public:
 
 	void suspend() const { kernel.suspend_task(m_task_id); }
 	void resume() const { kernel.resume_task(m_task_id); }
+	void abort() const { kernel.abort_task(m_task_id); }
 
 private:
 	int m_task_id;
