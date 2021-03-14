@@ -1,6 +1,6 @@
-#include "rtos/module/kernel_module.h"
-#include "rtos/user_platform.h"
-#include ASSEMBLER_HEADER_NAME
+#include <Mipt-RTOS/kernel_module.h>
+#include <Mipt-RTOS/platform.h>
+#include <Mipt-RTOS/asm_macro.h>
 
 namespace rt {
 
@@ -10,8 +10,8 @@ Kernel::Kernel()
 	addr_t sp = asm_get_stack_pointer();
 
 	for (task_id = 0; task_id < m_ntasks; ++task_id) {
-		m_stack_begin[task_id] = sp;
-		sp -= m_task_stack_sizes[task_id];
+		// m_stack_begin[task_id] = sp;
+		// sp -= m_task_stack_sizes[task_id];
 		//m_start_from_begining
 	}
 

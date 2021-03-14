@@ -1,19 +1,22 @@
-/* automatically generated
- * Platform: Linux */
+#ifndef PLATFORM_H_
+#define PLATFORM_H_
 
-#ifndef USER_PLATFORM_H_
-#define USER_PLATFORM_H_
+#define SUPPORTED_PLATFORMS												\
+	"TARGET_*** macro is not set or incorrect. Supported targets: "		\
+	"TARGET_LINUX_X86"
 
-#include <cstddef>
+#ifdef TARGET_LINUX_X86
+	#include <cstddef>
 
-namespace rt {
+	namespace rt {
 
-using addr_t = size_t;
-using task_id_t = unsigned int;
-using task_stack_sz_t = unsigned int;
+	using addr_t = size_t;
+	using task_id_t = unsigned int;
+	using task_stack_sz_t = unsigned int;
 
-} // rt namespace end
+	} // rt namespace end
+#else
+	static_assert(0, SUPPORTED_PLATFORMS);
+#endif
 
-#define ASSEMBLER_HEADER_NAME "rtos/asm/asm_linux_x86.h"
-
-#endif // USER_PLATFORM_H_
+#endif // PLATFORM_H_

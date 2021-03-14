@@ -1,7 +1,7 @@
 #ifndef RTOS_TASK_MODULE_H_
 #define RTOS_TASK_MODULE_H_
 
-#include "rtos/module/kernel_module.h"
+#include <Mipt-RTOS/kernel_module.h>
 
 namespace rt {
 

@@ -1,7 +1,7 @@
 #ifndef RTOS_KERNEL_MODULE_H_
 #define RTOS_KERNEL_MODULE_H_
 
-#include "rtos/user_platform.h"
+#include <Mipt-RTOS/platform.h>
 
 namespace rt {
 
