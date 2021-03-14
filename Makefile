@@ -1,15 +1,15 @@
 .PHONY: all build install uninstall clean
-EXTRA_CXXFLAGS=-std=c++14 -Wall -Wextra
+EXTRA_CXXFLAGS=-std=c++17 -Wall -Wextra
 
 all: build
 
 build: rtosconfig/build/rtosconfig
 
 install: build
-	chmod +x ./install.sh && ./install.sh
+	chmod +x ./install.sh && sudo bash install.sh
 
 uninstall:
-	chmod +x ./install.sh && ./install.sh -u
+	chmod +x ./install.sh && sudo bash install.sh -u
 
 # cleans build directories
 clean:

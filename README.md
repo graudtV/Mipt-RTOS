@@ -7,7 +7,7 @@ which helps to use this interface. Follow the links to get more information abou
 
 ## Requirments
 1. Boost library
-2. Compiler with C++14 support to install lib
+2. Compiler with C++17 support to install lib
 3. Cross-compiler for your target platform (Linux/AVR/etc) with C++17 support
 
 ## Installation
