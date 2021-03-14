@@ -1,4 +1,5 @@
 .PHONY: all build install uninstall clean
+EXTRA_CXXFLAGS=-std=c++14 -Wall -Wextra
 
 all: build
 
@@ -16,4 +17,4 @@ clean:
 
 rtosconfig/build/rtosconfig: rtosconfig/main.cpp
 	mkdir -p rtosconfig/build
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(EXTRA_CXXFLAGS) $(CXXFLAGS) $^ -o $@
