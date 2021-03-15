@@ -9,6 +9,11 @@ using PfnTaskRouting = void (*) (void);
 
 class Task final {
 public:
+	Task(const Task& other) = delete;
+	Task(Task&& other) = delete;
+	Task& operator =(const Task& other) = delete;
+	Task& operator =(Task&& other) = delete;
+
 	/* User API for managing tasks */
 	void suspend() { m_is_suspended = true; }
 	void resume() { m_is_suspended = false; }
