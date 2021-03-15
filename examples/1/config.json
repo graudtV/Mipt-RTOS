@@ -1,7 +1,7 @@
 {
 	"Platform": "Linux_x86",
 	"Tasks": [
-		{ "name": "task1",	"stack_size": 64	},
-		{ "name": "task2",	"stack_size": 128	}
+		{ "name": "task1",	"stack_size": 4096	},
+		{ "name": "task2",	"stack_size": 1024	}
 	]
 }

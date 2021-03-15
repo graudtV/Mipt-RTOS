@@ -7,7 +7,7 @@ rtos.h rtos.cpp: config.json
 	rtosconfig config.json
 
 clean:
-	rm rtos.h rtos.cpp
+	rm ./a.out rtos.h rtos.cpp
 
 run: ./a.out
 	./a.out
