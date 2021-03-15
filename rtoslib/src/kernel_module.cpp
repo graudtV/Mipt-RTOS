@@ -1,8 +1,6 @@
 #include <Mipt-RTOS/kernel_module.h>
 #include <Mipt-RTOS/asm_macro.h>
 
-#include <iostream>
-
 namespace rt {
 
 void Kernel::run()
