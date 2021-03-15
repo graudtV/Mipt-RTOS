@@ -83,7 +83,7 @@ void PlatformConfig::make_header_file(std::ostream& os)
 	make_description_section(os);
 	os <<
 R"(
-#include <Mipt-RTOS/task_module.h>
+#include <Mipt-RTOS/kernel_module.h>
 
 #define decltask(taskname) void detail::__##taskname##_routine(void)
 
@@ -96,17 +96,14 @@ namespace detail {
 R"(
 } // detail namespace end
 
-inline constexpr rt::Task
+using rt::kernel;
+
 )";
 	size_t i = 0;
 	for (auto& task : tasks) {
-		os << "\t" << task.name << "\t\t { " << i++ << " }";
-		os << ((i != tasks.size()) ? ',' : ';') << std::endl;
+		os << "inline rt::Task& " << task.name << " = "
+			<< "kernel.task(" << i++ << ");" << std::endl;
 	}
-	os <<
-R"(
-using rt::kernel;
-)";
 }
 
 
@@ -122,37 +119,19 @@ R"(
 
 namespace rt {
 
-const int Kernel::m_ntasks = )" << tasks.size() <<  R"(;
+Kernel Kernel::m_only_one;
 
-const PfnTaskRouting Kernel::m_task_routine_addresses[Kernel::m_ntasks] = {
+const task_id_t Kernel::m_ntasks = )" << tasks.size() <<  R"(;
+
+Task Kernel::m_tasks[Kernel::m_ntasks] = {
 )";
 	size_t i = 0;
-	for (auto& task : tasks)
-		os << "\t" << "detail::__" << task.name << "_routine" << ((++i != tasks.size()) ? "," : "") << std::endl;
+	for (auto& task : tasks) {
+		os << "\tTask(detail::__" << task.name << "_routine, "
+			<< task.stack_size << ")" << ((++i != tasks.size()) ? "," : "") << std::endl;
+	}
 	os <<
 R"(};
-
-task_stack_sz_t Kernel::m_task_stack_sizes[Kernel::m_ntasks] = {
-)";
-	i = 0;
-	for (auto& task : tasks)
-		os << "\t" << task.stack_size << ((++i != tasks.size()) ? "," : "") << std::endl;
-	os <<
-R"(};
-
-addr_t Kernel::m_task_stack_pointers[Kernel::m_ntasks] = {};
-
-addr_t Kernel::m_task_stack_starting[Kernel::m_ntasks] = {};
-
-bool Kernel::m_task_start_from_begining[Kernel::m_ntasks] = {
-)";
-	i = 0;
-	while (i < tasks.size())
-		os << "\t" << "true" << ((++i != tasks.size()) ? "," : "") << std::endl;
-	os <<
-R"(};
-
-bool Kernel::m_task_is_suspended[Kernel::m_ntasks] = {};
 
 task_id_t Kernel::m_current_task = 0;
 
