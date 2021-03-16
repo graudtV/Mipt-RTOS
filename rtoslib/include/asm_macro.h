@@ -4,6 +4,7 @@
 #include <Mipt-RTOS/platform.h>
 
 #ifdef TARGET_LINUX_X86
+
 	#define asm_pushall()			\
 		asm volatile (				\
 			"push %rax\n\t"			\
@@ -12,11 +13,13 @@
 			"push %rdx\n\t"			\
 			"push %rsi\n\t"			\
 			"push %rdi\n\t"			\
+			"push %rbp\n\t"			\
 		);
 
 
 	#define asm_popall()			\
 		asm volatile (				\
+			"pop %rbp\n\t"			\
 			"pop %rdi\n\t"			\
 			"pop %rsi\n\t"			\
 			"pop %rdx\n\t"			\
