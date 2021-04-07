@@ -7,8 +7,8 @@ void Kernel::run()
 	m_current_task = 0;
 	m_tasks[0].m_start_from_begining = false;
 	m_tasks[0].start();
-	m_tasks[0].abort();
-	relinquish(); // TODO: think if it is OK
+	//m_tasks[0].abort();
+	//relinquish(); // TODO: think if it is OK
 }
 
 void Kernel::relinquish()
@@ -20,8 +20,8 @@ void Kernel::relinquish()
 				m_current_task = 0;
 		} while (current_task().m_is_suspended == true);
 		if (current_task().m_start_from_begining == true) {
-			current_task().m_start_from_begining = false;
-			current_task().start();
+			current_task().restart();
+			return;
 		} else {
 			current_task().start();
 			return;

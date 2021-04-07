@@ -8,7 +8,8 @@ namespace rt {
 using PfnTaskRouting = void (*) (void);
 
 class Task final {
-	void start() const { m_context.set();	}
+	void start() const { m_context.set(); }
+	void restart() { start(); } //TODO restart
 	void save_state() { m_context.get(); }
 	void next(const Task &next) {
 		m_context.swap(next.m_context);
