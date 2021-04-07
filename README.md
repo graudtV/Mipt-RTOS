@@ -3,7 +3,7 @@ Mipt-RTOS is a simple cooperative RTOS, written on C++
 
 ## Library Overview
 Mipt-RTOS library consists of two main parts: directly library, which defines [Mipt-RTOS interface](#Mipt-RTOS-interface), and [rtosconfig](#rtosconfig) utility,
-which helps to use this interface. Follow the links to get more information about them
+which helps to configure RTOS library for your specific platform and purposes. Follow the links above to get more information about them
 
 ## Requirments
 1. Boost library
