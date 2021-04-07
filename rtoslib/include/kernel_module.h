@@ -1,13 +1,15 @@
 #ifndef RTOS_KERNEL_MODULE_H_
 #define RTOS_KERNEL_MODULE_H_
 
-#include <Mipt-RTOS/platform.h>
+#include "platform.h"
 
 namespace rt {
 
 using PfnTaskRouting = void (*) (void);
 
 class Task final {
+	void start() { m_context.set();	}
+	void save_state() { m_context.get(); }
 public:
 	Task(const Task& other) = delete;
 	Task(Task&& other) = delete;
@@ -23,19 +25,16 @@ public:
 	bool is_aborted() const { return m_is_suspended == true && m_start_from_begining == true; }
 
 private:
-	PfnTaskRouting m_routine_address = nullptr;
-	task_stack_sz_t m_stack_size = 0;
-	addr_t m_stack_pointer = 0;
-	addr_t m_stack_starting = 0;
+
+	TaskContext m_context;
 	bool m_start_from_begining = true;
 	bool m_is_suspended = false;
 
 	friend class Kernel;
 
 	/* Library will create tasks itself, you do not need to create them manually */
-	Task(PfnTaskRouting routine_address, task_stack_sz_t stack_size) :
-		m_routine_address(routine_address),
-		m_stack_size(stack_size) {}
+	Task(PfnTaskRouting routine_address, addr_t stack_addr, task_stack_sz_t stack_size) :
+		m_context(routine_address, stack_addr, stack_size) {}
 };
 
 class Kernel final {
@@ -44,6 +43,7 @@ public:
 
 	void run();
 	void relinquish();
+	void relinquish(task_id_t task_id);
 	void suspend() { current_task().suspend(); }
 
 	task_id_t ntasks() const { return m_ntasks; }
