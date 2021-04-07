@@ -27,9 +27,15 @@
 				sigemptyset(&m_uc.uc_sigmask);
 				makecontext(&m_uc, routine_address, 0);
 			}
-			void set()	{ setcontext(&m_uc); }
-			void get()	{ getcontext(&m_uc); }
-//			void swap()	{ swapcontext(
+			void set() const {
+				setcontext(&m_uc);
+			}
+			void get() {
+				getcontext(&m_uc);
+			}
+			void swap(const TaskContext &next) {
+				swapcontext(&m_uc, &next.m_uc);
+			}
 		};
 	} // rt namespace end
 #else

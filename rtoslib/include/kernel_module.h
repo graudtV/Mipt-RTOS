@@ -8,8 +8,11 @@ namespace rt {
 using PfnTaskRouting = void (*) (void);
 
 class Task final {
-	void start() { m_context.set();	}
+	void start() const { m_context.set();	}
 	void save_state() { m_context.get(); }
+	void next(const Task &next) {
+		m_context.swap(next.m_context);
+	}
 public:
 	Task(const Task& other) = delete;
 	Task(Task&& other) = delete;
@@ -44,11 +47,19 @@ public:
 	void run();
 	void relinquish();
 	void relinquish(task_id_t task_id);
+	void relinquish(Task &task) {
+		relinquish(&task - m_tasks);
+	}
 	void suspend() { current_task().suspend(); }
 
 	task_id_t ntasks() const { return m_ntasks; }
+	task_id_t task_id() const { return m_current_task; }
 	Task& task(task_id_t task_id) { return m_tasks[task_id]; }
 	Task& current_task() { return m_tasks[m_current_task]; }
+	void set_task(task_id_t task_id) {
+		m_current_task = task_id;
+		current_task().start();
+	}
 
 private:
 	Kernel() {}

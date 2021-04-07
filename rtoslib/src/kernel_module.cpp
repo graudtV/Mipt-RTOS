@@ -29,4 +29,11 @@ void Kernel::relinquish()
 	}
 }
 
+void Kernel::relinquish(task_id_t task_id)
+{
+	auto &task = current_task();
+	m_current_task = task_id;
+	task.next(current_task());
+}
+
 } // rt namespace end
