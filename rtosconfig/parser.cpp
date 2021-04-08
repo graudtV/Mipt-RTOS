@@ -4,10 +4,10 @@
 
 namespace pt = boost::property_tree;
 
-PlatformConfig JsonParser::parse()
+ProjectConfig JsonParser::parse()
 {
 	pt::ptree tree;
-	PlatformConfig config;
+	ProjectConfig config;
 
 	pt::read_json(m_input_stream, tree);
 	config.load_from(tree);

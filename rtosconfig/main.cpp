@@ -7,9 +7,8 @@ using namespace std::string_literals;
 int main(int argc, char *argv[])
 try {
 	const char *config_file_name = nullptr;
-	std::filesystem::path build_dir("Mipt-RTOS");
-	std::filesystem::path headers_dir("/usr/local/include/Mipt-RTOS");
-	std::filesystem::path sources_dir("/usr/local/src/Mipt-RTOS");
+	std::filesystem::path build_path("Mipt-RTOS");
+	std::filesystem::path lib_path("/usr/local/src/Mipt-RTOS");
 
 	if (argc != 2) {
 		std::cerr << "Usage: rtosconfig config_file_name.json" << std::endl;
@@ -22,7 +21,7 @@ try {
 		throw std::runtime_error("cannot open file '"s + config_file_name + "'");
 
 	JsonParser parser(fin);
-	LibBuilder builder(&parser, build_dir, headers_dir, sources_dir);
+	LibBuilder builder(&parser, build_path, lib_path);
 	builder.build();
 
 } catch (std::exception& e) {

@@ -1,8 +1,28 @@
 #include "config.h"
+#include <boost/algorithm/string/predicate.hpp> // case insensitive strings comparison
 #include <set>
 
 using namespace std::string_literals;
 namespace pt = boost::property_tree;
+
+std::string to_string(Target target)
+{
+	switch (target) {
+	case Target::eLinux_x86:		return "Linux_x86";
+	case Target::eLinux_x86_asm:	return "Linux_x86_asm";
+	default:						return "Unknown";
+	}
+}
+
+Target string_to_target(std::string_view name)
+{
+	Target targets[] = { Target::eLinux_x86, Target::eLinux_x86_asm };
+
+	for (Target target : targets)
+		if (boost::iequals(name, to_string(target)))
+			return target;
+	throw std::invalid_argument(std::string("unkwown target: ") + name.data());
+}
 
 void TaskConfig::load_from(pt::ptree& tree)
 try {
@@ -13,9 +33,9 @@ try {
 		+ e.path<pt::ptree::path_type>().dump() + "'");
 }
 
-void PlatformConfig::load_from(pt::ptree& tree)
+void ProjectConfig::load_from(pt::ptree& tree)
 try {
-	platform = tree.get<std::string>("Platform");
+	target = string_to_target(tree.get<std::string>("Target"));
 
 	for (auto& task : tree.get_child("Tasks")) {
 		TaskConfig task_config;
@@ -28,7 +48,7 @@ try {
 		+ e.path<pt::ptree::path_type>().dump() + "'");
 }
 
-void PlatformConfig::check_correctness()
+void ProjectConfig::check_correctness()
 {
 	if (tasks.size() == 0)
 		throw std::runtime_error("No tasks specified");

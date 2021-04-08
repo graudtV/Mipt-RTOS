@@ -2,7 +2,34 @@
 #include "parser.h"
 #include <fstream>
 #include <cassert>
-#include <boost/algorithm/string/predicate.hpp> // case insensitive strings comparison
+
+namespace fs = std::filesystem;
+
+/*********************************************/
+/*****  rules where to put library files *****/
+
+/* first column - relative path in lib root, second - relative path in build root */
+
+/* rules for all platforms */
+LibBuilder::Filemap LibBuilder::common_filemap = {
+	{ "common/kernel_module.h",			"impl/include/kernel_module.h" },
+	{ "common/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
+};
+
+/* linux-specific rules */
+LibBuilder::Filemap LibBuilder::linux_x86_filemap = {
+	{ "linux_x86/platform.h",			"impl/include/platform.h" },
+	{ "linux_x86/asm_macro.h",			"impl/include/asm_macro.h" }
+};
+
+/* linux-specific rules */
+LibBuilder::Filemap LibBuilder::linux_x86_asm_filemap = {
+	{ "linux_x86_asm/platform.h",		"impl/include/platform.h" },
+	{ "linux_x86_asm/asm_macro.h",		"impl/include/asm_macro.h" }
+};
+
+/*********************************************/
+
 
 void LibBuilder::build()
 {
@@ -10,8 +37,8 @@ void LibBuilder::build()
 
 	try {
 
-	std::filesystem::remove_all(m_build_path); // clear if exists
-	std::filesystem::create_directory(m_build_path);
+	fs::remove_all(m_build_path); // clear if exists
+	fs::create_directory(m_build_path);
 
 	std::ofstream rtos_h(m_build_path / "rtos.h");
 	std::ofstream rtos_cpp(m_build_path / "rtos.cpp");
@@ -21,7 +48,7 @@ void LibBuilder::build()
 	make_impl_files();
 
 	} catch (std::exception& e) {
-		std::filesystem::remove_all(m_build_path); // clear on failure
+		fs::remove_all(m_build_path); // clear on failure
 		throw;
 	}
 }
@@ -110,7 +137,7 @@ R"(/* )" << header << R"(
  * See Mipt-RTOS documentation on https://github.com/graudtV/Mipt-RTOS
  *
  * User project configuration details
- * Platform: )" << m_config.platform << R"(
+ * Platform: )" << to_string(m_config.target) << R"(
  * Tasks:
 )";
 	for (auto& task : m_config.tasks)
@@ -125,20 +152,23 @@ R"(/* )" << header << R"(
 void LibBuilder::make_impl_files()
 {
 	auto impl_path = m_build_path / "impl";
-	auto headers_path = impl_path / "include";
-	auto sources_path = impl_path / "src";
 
-	std::filesystem::create_directory(impl_path);
-	std::filesystem::create_directory(headers_path);
-	std::filesystem::create_directory(sources_path);
+	fs::create_directory(impl_path);
+	fs::create_directory(impl_path / "include");
+	fs::create_directory(impl_path / "src");
 
-	std::filesystem::copy_file(m_header_templates / "kernel_module.h", headers_path / "kernel_module.h");
-	std::filesystem::copy_file(m_source_templates / "kernel_module.cpp", sources_path / "kernel_module.cpp");
-	
-	if (boost::iequals(m_config.platform, "Linux_x86")) {
-		std::filesystem::copy_file(m_header_templates / "platform_linux_x86.h", headers_path / "platform.h");
-		std::filesystem::copy_file(m_header_templates / "asm_macro_linux_x86.h", headers_path / "asm_macro.h");
-	} else {
-		throw std::runtime_error("unkwown platform: " + m_config.platform);
-	}
+	copy_files(m_lib_path, m_build_path, common_filemap);
+
+	if (m_config.target == Target::eLinux_x86)
+		copy_files(m_lib_path, m_build_path, linux_x86_filemap);
+	else if (m_config.target == Target::eLinux_x86_asm)
+		copy_files(m_lib_path, m_build_path, linux_x86_asm_filemap);
+	else
+		throw std::runtime_error("unkwown target: " + to_string(m_config.target));
+}
+
+void LibBuilder::copy_files(const fs::path& src_root, const fs::path& dst_root, const Filemap& filemap)
+{
+	for (auto& mapping : filemap)
+		fs::copy_file(src_root / mapping.first, dst_root / mapping.second);
 }
