@@ -9,6 +9,8 @@
 	#include <cstddef>
 	#include <csignal>
 	#include <ucontext.h>
+	#include <signal.h>
+	#include <sys/time.h>
 
 	namespace rt {
 		using addr_t = void *;
@@ -37,6 +39,35 @@
 				swapcontext(&m_uc, &next.m_uc);
 			}
 		};
+
+		class Timer {
+		private:
+			Timer() {
+				m_act.sa_handler = m_handler;
+				m_act.sa_flags = SA_RESTART;
+				sigemptyset(&m_act.sa_mask);
+				sigaction(SIGPROF, &m_act, nullptr);
+
+				m_it.it_interval.tv_sec =    0;
+				m_it.it_interval.tv_usec =   m_period; 
+				m_it.it_value = m_it.it_interval;
+				setitimer(ITIMER_PROF, &m_it, nullptr);
+
+		}
+			static void (*m_handler)(int);
+			static struct sigaction m_act;
+			static struct itimerval m_it;
+			static unsigned m_period;
+			static Timer m_only_one;
+		public:
+			~Timer() = default;
+			Timer(const Timer &) = delete;
+			Timer &operator =(const Timer &) = delete;
+			static constexpr Timer& get_instance() {
+				return m_only_one;
+			}
+		};
+		inline constexpr Timer& timer = Timer::get_instance();
 	} // rt namespace end
 #else
 	static_assert(0, SUPPORTED_PLATFORMS);
