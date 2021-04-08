@@ -6,7 +6,7 @@
 # automatically, but binaries are stored in an existing system
 # directory, which won't be deleted (because there could be other files)
 LIB_HEADERS_PATH="/usr/local/include/Mipt-RTOS"
-LIB_SOURCES_PATH="/usr/local/lib/Mipt-RTOS"
+LIB_SOURCES_PATH="/usr/local/src/Mipt-RTOS"
 
 LIB_RTOS_CONFIG_BIN="/usr/local/bin/rtosconfig"
 
