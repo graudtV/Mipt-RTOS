@@ -6,9 +6,8 @@
 namespace fs = std::filesystem;
 
 /*********************************************/
-/*****  rules where to put library files *****/
-
-/* first column - relative path in lib root, second - relative path in build root */
+/* rules where to put library files during building
+ * first column - relative path in lib root, second - relative path in build root */
 
 /* rules for all platforms */
 LibBuilder::Filemap LibBuilder::common_filemap = {
@@ -16,16 +15,25 @@ LibBuilder::Filemap LibBuilder::common_filemap = {
 	{ "common/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
 };
 
+namespace {
+
 /* linux-specific rules */
-LibBuilder::Filemap LibBuilder::linux_x86_filemap = {
+LibBuilder::Filemap linux_x86_filemap = {
 	{ "linux_x86/platform.h",			"impl/include/platform.h" },
 	{ "linux_x86/asm_macro.h",			"impl/include/asm_macro.h" }
 };
 
-/* linux-specific rules */
-LibBuilder::Filemap LibBuilder::linux_x86_asm_filemap = {
+/* linux-specific rules for asm version */
+LibBuilder::Filemap linux_x86_asm_filemap = {
 	{ "linux_x86_asm/platform.h",		"impl/include/platform.h" },
 	{ "linux_x86_asm/asm_macro.h",		"impl/include/asm_macro.h" }
+};
+
+} // anonymous namespace end
+
+std::map<Target, LibBuilder::Filemap> LibBuilder::target_specific_filemaps = {
+	{ Target::eLinux_x86,				linux_x86_filemap },
+	{ Target::eLinux_x86_asm,			linux_x86_asm_filemap}
 };
 
 /*********************************************/
@@ -159,12 +167,10 @@ void LibBuilder::make_impl_files()
 
 	copy_files(m_lib_path, m_build_path, common_filemap);
 
-	if (m_config.target == Target::eLinux_x86)
-		copy_files(m_lib_path, m_build_path, linux_x86_filemap);
-	else if (m_config.target == Target::eLinux_x86_asm)
-		copy_files(m_lib_path, m_build_path, linux_x86_asm_filemap);
-	else
+	auto filemap = target_specific_filemaps.find(m_config.target);
+	if (filemap == target_specific_filemaps.end())
 		throw std::runtime_error("unkwown target: " + to_string(m_config.target));
+	copy_files(m_lib_path, m_build_path, filemap->second);
 }
 
 void LibBuilder::copy_files(const fs::path& src_root, const fs::path& dst_root, const Filemap& filemap)

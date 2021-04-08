@@ -9,6 +9,8 @@ class ConfigParser;
 
 class LibBuilder {
 public:
+	using Filemap = std::map<std::string, std::string>;
+	
 	LibBuilder(ConfigParser *parser,
 			const std::filesystem::path& build_path,
 			const std::filesystem::path& lib_path) :
@@ -29,11 +31,8 @@ private:
 	void make_impl_files();
 	void make_description_section(std::ostream& os, const std::string& header);
 
-	using Filemap = std::map<std::string, std::string>;
-
 	static Filemap common_filemap;
-	static Filemap linux_x86_filemap;
-	static Filemap linux_x86_asm_filemap;
+	static std::map<Target, Filemap> target_specific_filemaps;
 
 	void copy_files(const std::filesystem::path& src_root, const std::filesystem::path& dst_root, const Filemap& filemap);
 };
