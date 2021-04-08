@@ -11,22 +11,25 @@ namespace fs = std::filesystem;
 
 /* rules for all platforms */
 LibBuilder::Filemap LibBuilder::common_filemap = {
-	{ "common/kernel_module.h",			"impl/include/kernel_module.h" },
-	{ "common/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
+	// { "common/kernel_module.h",			"impl/include/kernel_module.h" },
+	// { "common/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
 };
 
 namespace {
 
 /* linux-specific rules */
 LibBuilder::Filemap linux_x86_filemap = {
-	{ "linux_x86/platform.h",			"impl/include/platform.h" },
-	{ "linux_x86/asm_macro.h",			"impl/include/asm_macro.h" }
+	{ "linux_x86/platform.h",				"impl/include/platform.h" },
+	{ "linux_x86/kernel_module.h",			"impl/include/kernel_module.h" },
+	{ "linux_x86/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
 };
 
 /* linux-specific rules for asm version */
 LibBuilder::Filemap linux_x86_asm_filemap = {
-	{ "linux_x86_asm/platform.h",		"impl/include/platform.h" },
-	{ "linux_x86_asm/asm_macro.h",		"impl/include/asm_macro.h" }
+	{ "linux_x86_asm/platform.h",			"impl/include/platform.h" },
+	{ "linux_x86_asm/asm_macro.h",			"impl/include/asm_macro.h" },
+	{ "linux_x86_asm/kernel_module.h",		"impl/include/kernel_module.h" },
+	{ "linux_x86_asm/kernel_module.cpp",	"impl/src/kernel_module.cpp" }
 };
 
 } // anonymous namespace end
@@ -99,6 +102,8 @@ using rt::kernel;
 
 void LibBuilder::make_rtos_cpp(std::ostream& os)
 {
+	size_t i = 0;
+
 	make_description_section(os, "rtos.cpp: Mipt-RTOS configuration file");
 	os <<
 R"(
@@ -108,14 +113,28 @@ namespace rt {
 
 Kernel Kernel::m_only_one;
 
-const task_id_t Kernel::m_ntasks = )" << m_config.tasks.size() <<  R"(;
+const task_id_t Kernel::m_ntasks = )" << m_config.tasks.size() << ";" << std::endl;
 
+	if (m_config.target == Target::eLinux_x86) {
+		os << std::endl << "namespace {" << std::endl << std::endl;
+
+		i = 0;
+		for (auto& task : m_config.tasks)
+			os << "unsigned char __" << task.name << "_stack[" << task.stack_size << "];" << std::endl;
+		os << std::endl << "} // anonymous namespace end" << std::endl;
+	}
+		os <<
+R"(
 Task Kernel::m_tasks[Kernel::m_ntasks] = {
 )";
-	size_t i = 0;
+	i = 0;
 	for (auto& task : m_config.tasks) {
-		os << "\tTask(detail::__" << task.name << "_routine, "
-			<< task.stack_size << ")" << ((++i != m_config.tasks.size()) ? "," : "") << std::endl;
+		os << "\tTask(detail::__" << task.name << "_routine, ";
+		if (m_config.target == Target::eLinux_x86)
+			os << "__" << task.name << "_stack, sizeof __" << task.name << "_stack";
+		else if (m_config.target == Target::eLinux_x86_asm)
+			os << task.stack_size;
+		os << ")" << ((++i != m_config.tasks.size()) ? "," : "") << std::endl;
 	}
 	os <<
 R"(};
