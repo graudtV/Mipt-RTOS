@@ -1,5 +1,5 @@
 {
-	"Target": "Linux_x86",
+	"Target": "Linux_x86_asm",
 	"Tasks": [
 		{ "name": "task1",	"stack_size": 4096	},
 		{ "name": "task2",	"stack_size": 1024	}
