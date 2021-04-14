@@ -1,13 +1,13 @@
 all: a.out
 	
-a.out: main.cpp rtos.cpp rtos.h
-	c++ main.cpp -std=c++17 rtos.cpp -DTARGET_LINUX_X86 /usr/local/lib/Mipt-RTOS/*
+a.out: main.cpp Mipt-RTOS
+	c++ -std=c++17 main.cpp Mipt-RTOS/rtos.cpp
 
-rtos.h rtos.cpp: config.json
+Mipt-RTOS:
 	rtosconfig config.json
 
 clean:
-	rm ./a.out rtos.h rtos.cpp
+	rm -rf ./a.out Mipt-RTOS
 
 run: ./a.out
 	./a.out

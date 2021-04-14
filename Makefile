@@ -15,6 +15,6 @@ uninstall:
 clean:
 	rm -rf rtosconfig/build
 
-rtosconfig/build/rtosconfig: rtosconfig/main.cpp
+rtosconfig/build/rtosconfig: rtosconfig/main.cpp rtosconfig/parser.cpp rtosconfig/lib_builder.cpp rtosconfig/config.cpp
 	mkdir -p rtosconfig/build
 	$(CXX) $(EXTRA_CXXFLAGS) $(CXXFLAGS) $^ -o $@
