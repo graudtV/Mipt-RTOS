@@ -21,7 +21,9 @@ cd Mipt-RTOS
 ```
 3. Run installation
 ```
-make install
+mkdir build && cd build
+cmake ..
+sudo make install # sudo may not be required on some platforms
 ```
 4. If everithing is OK, library sources and headers will be installed into system directories, and you will be able to run [rtosconfig](#rtosconfig) utility.
 You can try running the following:
