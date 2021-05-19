@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <csignal>
 #include <ucontext.h>
+#include <sys/time.h>
 
 namespace rt {
 
@@ -32,5 +33,24 @@ public:
 private:
 	ucontext_t m_uc;
 };
+
+class Timer {
+private:
+	using HandlerFptr = void (*) (int);
+	Timer(unsigned period);
+	struct sigaction m_act;
+	struct itimerval m_it;
+	unsigned m_period;
+	static Timer m_only_one;
+public:
+	~Timer() = default;
+	Timer(const Timer &) = delete;
+	Timer &operator =(const Timer &) = delete;
+	static constexpr Timer& get_instance() {
+		return m_only_one;
+	}
+};
+
+inline constexpr Timer& timer = Timer::get_instance();
 
 } // rt namespace end
