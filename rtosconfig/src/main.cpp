@@ -23,7 +23,6 @@ try {
 	JsonParser parser(fin);
 	LibBuilder builder(&parser, build_path, lib_path);
 	builder.build();
-
 } catch (std::exception& e) {
 	std::cerr << "Configuration failure: " << e.what() << std::endl;
 	return EXIT_FAILURE;

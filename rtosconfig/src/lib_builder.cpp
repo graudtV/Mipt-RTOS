@@ -11,8 +11,7 @@ namespace fs = std::filesystem;
 
 /* rules for all platforms */
 LibBuilder::Filemap LibBuilder::common_filemap = {
-	// { "common/kernel_module.h",			"impl/include/kernel_module.h" },
-	// { "common/kernel_module.cpp",		"impl/src/kernel_module.cpp" }
+/* no common files for now */
 };
 
 namespace {
