@@ -1,4 +1,4 @@
-#include "../include/kernel_module.h"
+#include "kernel_module.h"
 
 namespace rt {
 
@@ -13,6 +13,7 @@ void Kernel::run()
 
 void Kernel::relinquish()
 {
+	Timer::pause();
 	current_task().save_state();
 	while (1) {
 		do {
@@ -20,9 +21,11 @@ void Kernel::relinquish()
 				m_current_task = 0;
 		} while (current_task().m_is_suspended == true);
 		if (current_task().m_start_from_begining == true) {
+			Timer::resume();
 			current_task().restart();
 			return;
 		} else {
+			Timer::resume();
 			current_task().start();
 			return;
 		}

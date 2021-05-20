@@ -42,12 +42,19 @@ private:
 	struct itimerval m_it;
 	unsigned m_period;
 	static Timer m_only_one;
+	static sigset_t m_sigset;
 public:
 	~Timer() = default;
 	Timer(const Timer &) = delete;
 	Timer &operator =(const Timer &) = delete;
 	static constexpr Timer& get_instance() {
 		return m_only_one;
+	}
+	static void pause() {
+		sigprocmask(SIG_BLOCK, &m_sigset, nullptr);
+	}
+	static void resume() {
+		sigprocmask(SIG_UNBLOCK, &m_sigset, nullptr);
 	}
 };
 
