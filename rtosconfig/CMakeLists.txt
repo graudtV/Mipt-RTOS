@@ -18,4 +18,6 @@ target_sources(rtosconfig PRIVATE
 	src/parser.cpp
 	)
 
+target_link_libraries(rtosconfig Boost::boost)
+
 install(TARGETS rtosconfig DESTINATION bin)
