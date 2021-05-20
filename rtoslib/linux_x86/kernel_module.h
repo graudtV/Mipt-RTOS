@@ -22,19 +22,20 @@ public:
 	bool is_aborted() const { return m_is_suspended == true && m_start_from_begining == true; }
 
 private:
-	PfnTaskRouting m_routine_address = nullptr;
-	task_stack_sz_t m_stack_size = 0;
-	addr_t m_stack_pointer = 0;
-	addr_t m_stack_starting = 0;
+	TaskContext m_context;
 	bool m_start_from_begining = true;
 	bool m_is_suspended = false;
+
+	void start() const { m_context.set(); }
+	void restart() { start(); } //TODO restart
+	void save_state() { m_context.get(); }
+	void next(const Task &next) { m_context.swap(next.m_context); }
 
 	friend class Kernel;
 
 	/* Library will create tasks itself, you do not need to create them manually */
-	Task(PfnTaskRouting routine_address, task_stack_sz_t stack_size) :
-		m_routine_address(routine_address),
-		m_stack_size(stack_size) {}
+	Task(PfnTaskRouting routine_address, addr_t stack_addr, task_stack_sz_t stack_size) :
+		m_context(routine_address, stack_addr, stack_size) {}
 };
 
 class Kernel final {

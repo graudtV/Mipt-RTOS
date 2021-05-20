@@ -8,7 +8,9 @@ decltask(task1)
 	printf("task1 --- point 1\n"); kernel.relinquish();
 	printf("task1 --- point 2\n"); kernel.relinquish();
 	printf("task1 --- point 3\n"); kernel.relinquish();
+	task1.suspend();
 	task2.resume();
+	kernel.relinquish();
 }
 
 decltask(task2)
