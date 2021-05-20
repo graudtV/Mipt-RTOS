@@ -10,7 +10,7 @@ class Input {
 	Input(){}
 public:
 	template <typename... Ts>
-	void read(const Ts&... obj) {
+	void read(Ts&... obj) {
 		auto lock = Lock{m_lock};
 		(std::cin >> ... >> obj);
 	}
